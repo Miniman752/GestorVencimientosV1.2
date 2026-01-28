@@ -1,0 +1,7 @@
+2026-01-04 21:58:02,937 - GestorVencimientos - INFO - Iniciando aplicación Gestor de Vencimientos...
+Inicializando base de datos...
+DEBUG: init_db_engine called. URL: sqlite:///E:/43.Gestor de vencimientos/07.Gestor de vencimientos/src_restored/vencimientos.db
+DEBUG: init_db_engine called. URL: sqlite:///E:/43.Gestor de vencimientos/07.Gestor de vencimientos/src_restored/vencimientos.db
+Insights Error: name 'SessionLocal' is not defined
+Insights Error: name 'SessionLocal' is not defined
+2026-01-04 21:58:08,172 - GestorVencimientos - INFO - INDEC Sync: API endpoint returned 400 (Series ID likely changed/deprecated). Skipping sync.

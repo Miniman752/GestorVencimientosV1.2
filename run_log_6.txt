@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\main.py", line 6, in <module>
+    from views.main_window import MainWindow
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\views\main_window.py", line 7, in <module>
+    from .dashboard_view import DashboardView
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\views\dashboard_view.py", line 6, in <module>
+    from services.proactive_service import ProactiveService
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\services\proactive_service.py", line 8, in <module>
+    class ProactiveService:
+    ...<35 lines>...
+                return None
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\services\proactive_service.py", line 10, in ProactiveService
+    @safe_transaction
+     ^^^^^^^^^^^^^^^^
+NameError: name 'safe_transaction' is not defined

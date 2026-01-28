@@ -1,0 +1,11 @@
+﻿--- Testing create_vencimiento (FRESH PROV) ---
+DEBUG: init_db_engine called. URL: postgresql://neondb_owner:npg_vhmWRL8ESXI3@ep-green-night-acbu7krn-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require
+Creating Vencimiento...
+2026-01-15 10:31:32,886 - GestorVencimientos - INFO - AudioService initialized on Windows
+Created Vencimiento ID: 28
+Proveedor Created: 'Banco (Conciliaci¾n)'
+Categoria Value: 'OTRO'
+Categoria MATCH.
+Vencimiento Estado: EstadoVencimiento.PAGADO
+State MATCH.
+Cleanup done.

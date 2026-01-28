@@ -1,0 +1,11 @@
+DB Content Report
+URL: postgresql://neondb_owner:npg_vhmWRL8ESXI3@ep-green-night-acbu7krn-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require
+--------------------------------
+Table 'vencimientos': 45 records
+Sample vencimientos: [(69, 50, '2026-01', datetime.date(2026, 1, 2), Decimal('14052.89'), 'ARS', Decimal('0.00'), 'PAGADO', 1, '01\\2026\\Villaguay Galpón\\01-2026_ENERSA_Villaguay Galpón_FACTURA.pdf', None, 0, 20, 38)]
+Table 'obligaciones': 37 records
+Sample obligaciones: [(1, 1, 1, '')]
+Table 'proveedores': 23 records
+Sample proveedores: [(1, 'EXPENSAS (Dpto.)', 'EXPENSA', 'Mensual', 1)]
+Table 'inmuebles': 17 records
+Sample inmuebles: [(1, 'Dpto. Callao 1234', 'Av. Callao 1234 (P10 D281)', 'CMA', 'Otro', 'ACTIVO')]

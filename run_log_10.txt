@@ -1,0 +1,26 @@
+2026-01-04 21:54:55,661 - GestorVencimientos - INFO - Iniciando aplicación Gestor de Vencimientos...
+Inicializando base de datos...
+DEBUG: init_db_engine called. URL: sqlite:///E:/43.Gestor de vencimientos/07.Gestor de vencimientos/src_restored/vencimientos.db
+DEBUG: init_db_engine called. URL: sqlite:///E:/43.Gestor de vencimientos/07.Gestor de vencimientos/src_restored/vencimientos.db
+Traceback (most recent call last):
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\main.py", line 70, in <module>
+    main()
+    ~~~~^^
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\main.py", line 45, in main
+    app = MainWindow()
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\views\main_window.py", line 103, in __init__
+    self.vencimientos_view = VencimientosView(self)
+                             ~~~~~~~~~~~~~~~~^^^^^^
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\views\vencimientos_view.py", line 54, in __init__
+    self.time_navigator = TimeNavigatorView(self.toolbar_frame, on_change_command=self.on_period_change)
+                          ^^^^^^^^^^^^^^^^^
+2026-01-04 21:54:56,260 - GestorVencimientos - ERROR - Unexpected Error in get_dashboard_data: name 'ProveedorServicio' is not defined
+Traceback (most recent call last):
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\utils\decorators.py", line 37, in wrapper
+    result = func(*args, **kwargs)
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\services\dashboard_service.py", line 63, in get_dashboard_data
+    gastos_cat_raw = session.query(ProveedorServicio.categoria, Vencimiento).select_from(Vencimiento).join(Obligacion, Vencimiento.obligacion_id == Obligacion.id).join(ProveedorServicio, Obligacion.servicio_id == ProveedorServicio.id).filter(extract('year', Vencimiento.fecha_vencimiento) == current_year).all()
+                                   ^^^^^^^^^^^^^^^^^
+NameError: name 'ProveedorServicio' is not defined
+NameError: name 'TimeNavigatorView' is not defined
+2026-01-04 21:54:56,291 - GestorVencimientos - ERROR - Error en Dashboard: name 'ProveedorServicio' is not defined

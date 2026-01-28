@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\main.py", line 6, in <module>
+    from views.main_window import MainWindow
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\views\main_window.py", line 18, in <module>
+    from .chat_view import ChatView
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\views\chat_view.py", line 1, in <module>
+    class ChatView(ctk.CTkFrame):
+                   ^^^
+NameError: name 'ctk' is not defined

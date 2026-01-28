@@ -1,0 +1,28 @@
+﻿DEBUG: init_db_engine called. URL: postgresql://neondb_owner:npg_vhmWRL8ESXI3@ep-green-night-acbu7krn-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require
+--- DEBUGGING DASHBOARD DATA ---
+Total Vencimientos: 45
+Vencimientos with Valid Obligaciones: 45
+Vencimientos with Valid Proveedores: 45
+
+--- CATEGORY RAW DATA ---
+Prov: EXPENSAS (Dpto.) | Cat: EXPENSA
+Prov: EXPENSA (Cochera) | Cat: EXPENSA
+Prov: ABL | Cat: IMPUESTO
+Prov: AYSA (Dpto.) | Cat: SERVICIO
+Prov: AYSA (Cochera) | Cat: SERVICIO
+Prov: AFIM (TGI) | Cat: OTRO
+Prov: FAECYS | Cat: OTRO
+Prov: INACAP | Cat: OTRO
+Prov: OSECAC | Cat: OTRO
+Prov: SEGURO RETIRO | Cat: OTRO
+
+--- DISTINCT CATEGORIES ---
+Distinct Cat: OTRO
+Distinct Cat: EXPENSA
+Distinct Cat: SERVICIO
+Distinct Cat: IMPUESTO
+
+--- PROBLEMATIC QUERY TEST ---
+Query Result Count: 2
+Cat: IMPUESTO | Amount: 128358.14
+Cat: OTRO | Amount: 61321.98

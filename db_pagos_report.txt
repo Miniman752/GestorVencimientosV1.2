@@ -1,0 +1,3 @@
+DB Pagos Report
+Table 'pagos': 38 records
+Sample pagos: [(3, 13, datetime.date(2026, 1, 12), Decimal('332631.75'), 'Detectado Automático', '2025\\12\\Ayacucho 4015 Lote 14-15\\2025-12_ENERSA_Ayacucho 4015 Lote 14-15_PAGO.pdf', None)]

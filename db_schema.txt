@@ -1,0 +1,10 @@
+--- Inspecting Enum 'tipoajuste' ---
+Allowed values for 'tipoajuste': ['FIJO', 'PROMEDIO_MOVIL_3M', 'ESTACIONAL_IPC', 'INDICE_CONTRATO']
+
+--- Inspecting Table 'reglas_ajuste' ---
+('id', 'integer', 'int4')
+('obligacion_id', 'integer', 'int4')
+('tipo_ajuste', 'USER-DEFINED', 'tipoajuste')
+('frecuencia_meses', 'integer', 'int4')
+('proximo_ajuste', 'date', 'date')
+('indice_referencia', 'character varying', 'varchar')

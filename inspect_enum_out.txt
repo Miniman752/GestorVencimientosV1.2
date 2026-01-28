@@ -1,0 +1,7 @@
+﻿Connecting to: postgresql://neondb_owner:npg_vhmWRL8ESXI3@ep-green-night-acbu7krn-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require
+
+--- Enum Values for 'categoriaservicio' ---
+IMPUESTO
+SERVICIO
+EXPENSA
+OTRO

@@ -1,0 +1,11 @@
+﻿--- Testing create_vencimiento (FRESH PROV) ---
+DEBUG: init_db_engine called. URL: postgresql://neondb_owner:npg_vhmWRL8ESXI3@ep-green-night-acbu7krn-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require
+Creating Vencimiento...
+2026-01-15 10:29:00,167 - GestorVencimientos - INFO - AudioService initialized on Windows
+FAILED: (psycopg2.errors.InvalidTextRepresentation) invalid input value for enum categoriaservicio: "Otros"
+LINE 1: ...tidad, categoria) VALUES ('Banco (Conciliaci¾n)', 'Otros') R...
+                                                             ^
+
+[SQL: INSERT INTO proveedores (nombre_entidad, categoria) VALUES (%(nombre_entidad)s, %(categoria)s) RETURNING proveedores.id]
+[parameters: {'nombre_entidad': 'Banco (Conciliaci¾n)', 'categoria': 'Otros'}]
+(Background on this error at: https://sqlalche.me/e/20/9h9h)

@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\main.py", line 6, in <module>
+    from views.main_window import MainWindow
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\views\main_window.py", line 8, in <module>
+    from .vencimientos_view import VencimientosView
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\views\vencimientos_view.py", line 6, in <module>
+    from models import EstadoVencimiento
+ImportError: cannot import name 'EstadoVencimiento' from 'models' (unknown location)

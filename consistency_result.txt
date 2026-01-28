@@ -1,0 +1,11 @@
+VERIFICANDO CONSISTENCIA DE DATOS EN: postgresql://neondb_owner:npg_vhmWRL8ESXI3@ep-green-night-acbu7krn-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require
+------------------------------------------------------------
+
+[1] Verificando Formato de Periodos (Esperado: YYYY-MM)...
+   ✅ Todos los periodos tienen formato correcto (YYYY-MM).
+
+[2] Verificando Monedas...
+   ℹ️ Monedas encontradas: ['ARS']
+
+[3] Verificando Integridad Referencial (Vencimientos -> Obligaciones)...
+   ✅ Integridad referencial correcta.

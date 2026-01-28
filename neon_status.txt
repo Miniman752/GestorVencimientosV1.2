@@ -1,0 +1,12 @@
+--- ESTADO DE BASE DE DATOS NEON.TECH ---
+URL: ep-green-night-acbu7krn-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require
+
+TABLA                | REGISTROS 
+-----------------------------------
+Vencimientos         | 25        
+Proveedores          | 17        
+Inmuebles            | 11        
+Obligaciones         | 25        
+Usuarios             | 2         
+-----------------------------------
+Total Registros (aprox): 80

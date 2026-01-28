@@ -1,0 +1,17 @@
+{
+    "name": "Gestor Vencimientos Pro",
+    "short_name": "GestorApp",
+    "description": "Gestión profesional de vencimientos y pagos.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#1e293b",
+    "theme_color": "#2563eb",
+    "icons": [
+        {
+            "src": "/icons/icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

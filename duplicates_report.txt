@@ -1,0 +1,11 @@
+--- BÚSQUEDA DE DUPLICADOS EN NEON.TECH ---
+URL: ep-green-night-acbu7krn-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require
+
+[1] Analizando Proveedores...
+   ✅ No se encontraron proveedores duplicados.
+
+[2] Analizando Inmuebles...
+   ✅ No se encontraron inmuebles duplicados.
+
+[3] Analizando Vencimientos Activos (No eliminados)...
+   ✅ No se encontraron vencimientos duplicados (misma obligación/periodo).

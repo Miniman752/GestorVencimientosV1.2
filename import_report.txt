@@ -1,0 +1,73 @@
+E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py:39: SAWarning: This declarative base already contains a class with the same class name and module name as models.entities.Inmueble, and will be replaced in the string-lookup table.
+  class Inmueble(Base):
+Checking imports in E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored...
+Testing config... OK
+Testing database... OK
+Testing seed_data... FAIL: cannot import name 'Inmueble' from 'models' (unknown location)
+Testing controllers.catalogs_controller... OK
+Testing controllers.dashboard_controller... OK
+Testing controllers.db_admin_controller... OK
+Testing controllers.forex_controller... OK
+Testing controllers.obligaciones_controller... OK
+Testing controllers.reconciliation_controller... OK
+Testing controllers.reports_controller... OK
+Testing controllers.vencimientos_controller... OK
+Testing controllers.__init__... OK
+Testing dtos.analysis... OK
+Testing dtos.catalogs... OK
+Testing dtos.dashboard... OK
+Testing dtos.oracle... OK
+Testing dtos.vencimiento... OK
+Testing models.entities... FAIL: Table 'inmuebles' is already defined for this MetaData instance.  Specify 'extend_existing=True' to redefine options and columns on an existing Table object.
+Testing repositories.base_repository... OK
+Testing repositories.catalogs_repository... FAIL: cannot import name 'Inmueble' from 'models.entities' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py)
+Testing repositories.vencimiento_repository... FAIL: cannot import name 'Vencimiento' from 'models.entities' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py)
+Testing services.audio_service... OK
+Testing services.audit_service... FAIL: cannot import name 'AuditLog' from 'models.entities' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py)
+Testing services.catalogs_service... FAIL: cannot import name 'Inmueble' from 'models.entities' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py)
+Testing services.chat_service... FAIL: cannot import name 'Vencimiento' from 'models.entities' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py)
+Testing services.cloud_service... OK
+Testing services.cognitive_service... FAIL: cannot import name 'Vencimiento' from 'models.entities' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py)
+Testing services.currency_service... FAIL: cannot import name 'Cotizacion' from 'models.entities' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py)
+Testing services.dashboard_service... FAIL: cannot import name 'VencimientoRepository' from 'repositories.vencimiento_repository' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\repositories\vencimiento_repository.py)
+Testing services.economic_service... FAIL: cannot import name 'IndiceEconomico' from 'models.entities' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py)
+Testing services.forex_service... FAIL: cannot import name 'Cotizacion' from 'models.entities' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py)
+Testing services.health_check_service... OK
+Testing services.indec_service... FAIL: cannot import name 'IndiceEconomico' from 'models.entities' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py)
+Testing services.oracle_service... FAIL: cannot import name 'Obligacion' from 'models.entities' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py)
+Testing services.period_service... FAIL: cannot import name 'PeriodoContable' from 'models.entities' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py)
+Testing services.proactive_service... FAIL: cannot import name 'Vencimiento' from 'models.entities' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py)
+Testing services.reconciliation_history_service... OK
+Testing services.report_service... FAIL: cannot import name 'Vencimiento' from 'models.entities' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py)
+Testing services.smart_invoice_service... OK
+Testing services.source_config_service... OK
+Testing services.time_lord_service... FAIL: cannot import name 'Vencimiento' from 'models.entities' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py)
+Testing services.vencimiento_service... FAIL: cannot import name 'Vencimiento' from 'models.entities' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\models\entities.py)
+Testing utils.decorators... OK
+Testing utils.exceptions... OK
+Testing utils.import_helper... OK
+Testing utils.logger... OK
+Testing views.analysis_view... FAIL: cannot import name 'TimeLordService' from 'services.time_lord_service' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\services\time_lord_service.py)
+Testing views.calculator_view... OK
+Testing views.catalogs_view... FAIL: cannot import name 'EstadoInmueble' from 'models' (unknown location)
+Testing views.chat_view... FAIL: name 'ctk' is not defined
+Testing views.cloud_wizard_view... OK
+Testing views.dashboard_view... FAIL: cannot import name 'ProactiveService' from 'services.proactive_service' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\services\proactive_service.py)
+Testing views.db_admin_view... OK
+Testing views.forex_editor_dialog... OK
+Testing views.forex_view... OK
+Testing views.health_monitor_view... OK
+Testing views.history_dialog... OK
+Testing views.import_wizard_view... OK
+Testing views.main_window... FAIL: cannot import name 'DashboardView' from 'views.dashboard_view' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\views\dashboard_view.py)
+Testing views.oracle_view... FAIL: cannot import name 'OracleService' from 'services.oracle_service' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\services\oracle_service.py)
+Testing views.period_manager_view... FAIL: cannot import name 'PeriodService' from 'services.period_service' (E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\services\period_service.py)
+Testing views.reconciliation_view... OK
+Testing views.record_editor_dialog... OK
+Testing views.source_manager_view... OK
+Testing views.source_wizard_view... OK
+Testing views.vencimientos_view... FAIL: cannot import name 'EstadoVencimiento' from 'models' (unknown location)
+Testing views.__init__... OK
+Testing views.components.autocomplete_combobox... OK
+Testing views.components.smart_filter_view... OK
+Testing views.components.time_navigator... OK

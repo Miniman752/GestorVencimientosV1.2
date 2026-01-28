@@ -1,0 +1,3 @@
+CTK_PATH=C:\Users\lafli\AppData\Local\Programs\Python\Python313\Lib\site-packages\customtkinter
+PATH EXISTS
+CONTENTS=['assets', 'windows', '__init__.py', '__pycache__']

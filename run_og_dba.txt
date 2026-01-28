@@ -1,0 +1,25 @@
+2026-01-04 22:12:03,369 - GestorVencimientos - INFO - Iniciando aplicación Gestor de Vencimientos...
+Inicializando base de datos...
+DEBUG: init_db_engine called. URL: sqlite:///E:/43.Gestor de vencimientos/07.Gestor de vencimientos/src_restored/vencimientos.db
+DEBUG: init_db_engine called. URL: sqlite:///E:/43.Gestor de vencimientos/07.Gestor de vencimientos/src_restored/vencimientos.db
+Insights Error: name 'SessionLocal' is not defined
+Insights Error: name 'SessionLocal' is not defined
+2026-01-04 22:12:08,623 - GestorVencimientos - INFO - INDEC Sync: API endpoint returned 400 (Series ID likely changed/deprecated). Skipping sync.
+Traceback (most recent call last):
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\main.py", line 70, in <module>
+    main()
+    ~~~~^^
+  File "E:\43.Gestor de vencimientos\07.Gestor de vencimientos\src_restored\main.py", line 67, in main
+    app.mainloop()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\lafli\AppData\Local\Programs\Python\Python313\Lib\site-packages\customtkinter\windows\ctk_tk.py", line 165, in mainloop
+    super().mainloop(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\lafli\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 1599, in mainloop
+    self.tk.mainloop(n)
+    ~~~~~~~~~~~~~~~~^^^
+  File "C:\Users\lafli\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 2069, in __call__
+    def __call__(self, *args):
+    
+KeyboardInterrupt
+^C

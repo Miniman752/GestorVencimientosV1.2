@@ -1,0 +1,13 @@
+
+--- Table: indices_economicos ---
+  CRITICAL: periodo is NOT NULL and has NO DEFAULT in DB.
+  CRITICAL: valor is NOT NULL and has NO DEFAULT in DB.
+
+--- Table: pagos ---
+  CRITICAL: vencimiento_id is NOT NULL and has NO DEFAULT in DB.
+  CRITICAL: fecha_pago is NOT NULL and has NO DEFAULT in DB.
+
+--- Table: vencimientos ---
+  CRITICAL: obligacion_id is NOT NULL and has NO DEFAULT in DB.
+  CRITICAL: periodo is NOT NULL and has NO DEFAULT in DB.
+  CRITICAL: fecha_vencimiento is NOT NULL and has NO DEFAULT in DB.

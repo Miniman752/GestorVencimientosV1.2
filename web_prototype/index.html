@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor Vencimientos</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="theme-color" content="#1e293b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icons/icon.png">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --bg: #f8fafc;
+            --sidebar-bg: #1e293b;
+            --text-main: #334155;
+            --text-light: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background: var(--bg);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* --- LOGIN OVERLAY --- */
+        #loginOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1e293b;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .login-card h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .login-card p {
+            color: var(--secondary);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        /* --- SIDEBAR --- */
+        nav {
+            width: 260px;
+            background: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transition: width 0.3s;
+        }
+
+        .brand {
+            padding: 1.5rem;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .brand span {
+            font-size: 1.5rem;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 1rem 0;
+            margin: 0;
+            flex: 1;
+        }
+
+        .nav-btn {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            padding: 0.75rem 1.5rem;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #334155;
+            color: white;
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            border-right: 4px solid #60a5fa;
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        .footer {
+            padding: 1rem;
+            border-top: 1px solid #334155;
+            color: #64748b;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        header {
+            background: white;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #1e293b;
+        }
+
+        #status {
+            font-size: 0.9rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: none;
+        }
+
+        .status-loading {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .status-error {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .content-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        /* --- DASHBOARD CARDS --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card.compact {
+            min-height: auto;
+            justify-content: center;
+        }
+
+        .stat-card.chart {
+            min-height: 320px;
+            box-shadow: none;
+        }
+
+        .stat-card:hover {
+            border-color: #cbd5e1;
+        }
+
+        .chart-container {
+            position: relative;
+            flex: 1;
+            width: 100%;
+            min-height: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+
+        .stat-card h3 {
+            margin: 0 0 0.5rem 0;
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+        }
+
+        /* --- TABLES --- */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge.gray {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        /* --- VENCIMIENTOS GRID --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid #cbd5e1;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card.pagado {
+            border-left-color: var(--success);
+        }
+
+        .card.pendiente {
+            border-left-color: var(--warning);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #1e293b;
+        }
+
+        .price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .meta {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .actions {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* Buttons */
+        .btn {
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+        }
+
+        .btn-outline:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+
+        .btn-disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-card {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        /* --- SKELETON --- */
+        .skeleton {
+            background: #e2e8f0;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* --- TOASTS --- */
+        #toastContainer {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary);
+            color: var(--text-main);
+            font-weight: 500;
+            animation: slideIn 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* --- FILTERS BAR --- */
+        .filter-bar {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            box-shadow: var(--card-shadow);
+            border: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .summary-mini {
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            nav {
+                width: 100%;
+                flex-direction: row;
+                height: 60px;
+                order: 2;
+            }
+
+            .nav-text {
+                display: none;
+            }
+
+            .brand,
+            .footer {
+                display: none;
+            }
+
+            .nav-list {
+                flex-direction: row;
+                justify-content: space-around;
+                padding: 0;
+            }
+
+            .nav-btn {
+                padding: 0;
+                height: 100%;
+                justify-content: center;
+            }
+
+            main {
+                order: 1;
+                height: calc(100vh - 60px);
+            }
+
+            header {
+                padding: 1rem;
+            }
+
+            .content-scroll {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginOverlay">
+        <form class="login-card" onsubmit="handleLogin(event)">
+            <h2>GestorApp ⚡</h2>
+            <p>Inicia sesión para proteger tus datos.</p>
+            <div class="form-group">
+                <label>Usuario</label>
+                <input type="text" id="username" class="form-control" required placeholder="Tu usuario">
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="password" class="form-control" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn btn-primary"
+                style="width:100%; justify-content:center; padding:12px;">Entrar</button>
+            <p id="loginError" style="color:#ef4444; margin-top:1rem; display:none;"></p>
+        </form>
+    </div>
+
+    <!-- SIDEBAR -->
+    <nav style="display:none;" id="appSidebar">
+        <div class="brand">
+            <span>⚡</span>
+            <h2>GestorApp</h2>
+        </div>
+        <ul class="nav-list">
+            <li><button onclick="router('dashboard')" class="nav-btn active" id="nav-dashboard"><span
+                        class="nav-icon">📊</span><span class="nav-text">Dashboard</span></button></li>
+            <li><button onclick="router('vencimientos')" class="nav-btn" id="nav-vencimientos"><span
+                        class="nav-icon">📅</span><span class="nav-text">Vencimientos</span></button></li>
+            <li><button onclick="router('proveedores')" class="nav-btn" id="nav-proveedores"><span
+                        class="nav-icon">🏢</span><span class="nav-text">Proveedores</span></button></li>
+            <li><button onclick="router('inmuebles')" class="nav-btn" id="nav-inmuebles"><span
+                        class="nav-icon">🏠</span><span class="nav-text">Inmuebles</span></button></li>
+            <li><button onclick="router('pagos')" class="nav-btn" id="nav-pagos"><span class="nav-icon">🧾</span><span
+                        class="nav-text">Historial Pagos</span></button></li>
+        </ul>
+        <div style="padding:1rem; border-top: 1px solid #334155;">
+            <button onclick="logout()" class="nav-btn" style="color:#ef4444;"><span class="nav-icon">🚪</span><span
+                    class="nav-text">Cerrar Sesión</span></button>
+        </div>
+        <div class="footer">
+            v2.1
+        </div>
+    </nav>
+
+    <!-- MAIN AREA -->
+    <main style="display:none;" id="appMain">
+        <header>
+            <h1 id="pageTitle">Resumen Financiero</h1>
+            <div id="status">Verificando conexión...</div>
+        </header>
+
+        <div class="content-scroll">
+
+            <div id="view-dashboard" class="view-section">
+                <!-- Metrics Row -->
+                <div class="stats-grid">
+                    <div class="stat-card compact" style="border-left: 4px solid #ef4444;">
+                        <h3>Deuda Pendiente</h3>
+                        <p id="stat-deuda" class="stat-value" style="color: #ef4444;">$0</p>
+                    </div>
+                    <div class="stat-card compact" style="border-left: 4px solid #10b981;">
+                        <h3>Total Pagado</h3>
+                        <p id="stat-pagado" class="stat-value" style="color: #10b981;">$0</p>
+                    </div>
+                    <div class="stat-card compact" style="border-left: 4px solid #64748b;">
+                        <h3>Cant. Pendientes</h3>
+                        <p id="stat-pendientes" class="stat-value">0</p>
+                    </div>
+                    <div class="stat-card compact" style="border-left: 4px solid #f59e0b;">
+                        <h3>Vencen Pronto</h3>
+                        <p id="stat-proximos" class="stat-value" style="color: #f59e0b;">0</p>
+                    </div>
+                </div>
+
+                <!-- Charts Layout -->
+                <div class="grid" style="grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-top: 2rem;">
+                    <!-- Main Trend -->
+                    <div class="stat-card chart">
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+                            <h3 style="margin:0">Tendencia de Obligaciones (6 Meses)</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="monthlyChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Top Properties Breakdown -->
+                    <div class="stat-card chart">
+                        <h3>Deuda por Propiedad ($)</h3>
+                        <div class="chart-container">
+                            <canvas id="propChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Second Row -->
+                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+                    <div class="stat-card chart">
+                        <h3>Distribución por Categoría ($)</h3>
+                        <div class="chart-container">
+                            <canvas id="catChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="stat-card chart">
+                        <h3>Resumen Rápido</h3>
+                        <div id="dashboard-summary-list" style="margin-top: 1rem; flex:1; overflow-y:auto;">
+                            <!-- Dynamic list here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-vencimientos" class="view-section" style="display:none;">
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <span>🔍</span>
+                        <input type="text" id="searchBox" class="form-control" placeholder="Buscar proveedor o alias..."
+                            oninput="debouncedSearch()">
+                    </div>
+                    <div class="filter-group" style="flex:0; min-width: 150px;">
+                        <span>📅</span>
+                        <select id="periodFilter" class="form-control" onchange="loadVencimientos()">
+                            <option value="">Todos los meses</option>
+                        </select>
+                    </div>
+                    <div class="summary-mini">
+                        Pagado: <span id="total-pagado-filtro" style="color:var(--success)">$0</span> |
+                        Pendiente: <span id="total-pendiente-filtro" style="color:#ef4444">$0</span>
+                    </div>
+                </div>
+                <div id="app" class="grid"></div>
+            </div>
+
+            <div id="view-generic-table" class="view-section" style="display:none;">
+                <div class="table-container">
+                    <table>
+                        <thead id="generic-thead"></thead>
+                        <tbody id="generic-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- PAYMENT MODAL -->
+    <div id="paymentModal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 style="margin-top:0;">Registrar Pago</h2>
+            <p id="modalItemTitle" style="color:#64748b; margin-bottom:1.5rem;"></p>
+            <input type="hidden" id="payId">
+            <div class="form-group">
+                <label>Monto</label>
+                <input type="number" id="payAmount" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Fecha</label>
+                <input type="date" id="payDate" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Medio</label>
+                <select id="payMethod" class="form-control">
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Transferencia">Transferencia</option>
+                    <option value="Tarjeta">Tarjeta</option>
+                </select>
+            </div>
+            <div style="text-align:right; margin-top:2rem;">
+                <button onclick="closePayment()" class="btn btn-outline" style="margin-right:8px;">Cancelar</button>
+                <button onclick="confirmPayment()" class="btn btn-primary">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin; // Dynamically use the current host
+        const statusEl = document.getElementById('status');
+
+        // --- AUTH ---
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errEl = document.getElementById('loginError');
+
+            try {
+                const res = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (!res.ok) throw new Error("Acceso denegado");
+
+                const user = await res.json();
+                localStorage.setItem('user', JSON.stringify(user));
+                showApp();
+            } catch (e) {
+                errEl.innerText = "Usuario o contraseña incorrectos";
+                errEl.style.display = 'block';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            location.reload();
+        }
+
+        function checkAuth() {
+            const user = localStorage.getItem('user');
+            if (user) showApp();
+        }
+
+        function showApp() {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('appSidebar').style.display = 'flex';
+            document.getElementById('appMain').style.display = 'flex';
+            router('dashboard');
+        }
+
+        // --- ROUTING ---
+        function router(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            const navBtn = document.getElementById(`nav-${viewName}`);
+            if (navBtn) navBtn.classList.add('active');
+
+            const titles = { 'dashboard': 'Dashboard', 'vencimientos': 'Vencimientos', 'proveedores': 'Proveedores', 'inmuebles': 'Inmuebles', 'pagos': 'Historial' };
+            document.getElementById('pageTitle').innerText = titles[viewName] || 'App';
+
+            if (viewName === 'dashboard') loadDashboard();
+            else if (viewName === 'vencimientos') loadVencimientos();
+            else if (viewName === 'proveedores') loadGenericList('proveedores', ['Nombre', 'Categoría'], (i) => `<td>${i.nombre}</td><td>${i.categoria}</td>`);
+            else if (viewName === 'inmuebles') loadGenericList('inmuebles', ['Alias', 'Dirección'], (i) => `<td><strong>${i.alias}</strong></td><td>${i.direccion}</td>`);
+            else if (viewName === 'pagos') loadGenericList('pagos', ['Fecha', 'Detalle', 'Monto'], (i) => `<td>${i.fecha}</td><td>${i.detalle}</td><td style="color:green">$${i.monto}</td>`);
+
+            const sections = { 'dashboard': 'view-dashboard', 'vencimientos': 'view-vencimientos' };
+            const sectionId = sections[viewName] || 'view-generic-table';
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        // --- ACTIONS ---
+        let mainChart, propChart, catChart;
+
+        async function loadDashboard() {
+            try {
+                const res = await fetch(`${API_BASE}/dashboard-stats`);
+                if (!res.ok) {
+                    const err = await res.text();
+                    throw new Error(`Server Error ${res.status}: ${err}`);
+                }
+                const d = await res.json();
+                document.getElementById('stat-deuda').innerText = "$" + (d.total_deuda || 0).toLocaleString();
+                document.getElementById('stat-pagado').innerText = "$" + (d.total_pagado || 0).toLocaleString();
+                document.getElementById('stat-pendientes').innerText = d.vencimientos_pendientes || 0;
+                document.getElementById('stat-proximos').innerText = d.proximos_vencimientos || 0;
+
+                renderTrendChart(d.stats_mensuales || []);
+                renderPropChart(d.distribucion_propiedades || []);
+                renderCatChart(d.distribucion_categorias || []);
+                renderSummaryList(d);
+            } catch (e) {
+                console.error("Dashboard Load Error:", e);
+                showToast("Error cargando datos: " + e.message, "error");
+            }
+        }
+
+        function renderTrendChart(data) {
+            const container = document.getElementById('monthlyChart').parentElement;
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="color:#64748b; font-size:0.9rem;">Sin datos para mostrar</p>';
+                return;
+            }
+            const ctx = document.getElementById('monthlyChart').getContext('2d');
+            if (mainChart) mainChart.destroy();
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(37, 99, 235, 0.08)');
+            gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
+
+            mainChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(i => i.periodo),
+                    datasets: [{
+                        label: 'Monto',
+                        data: data.map(i => i.monto),
+                        borderColor: '#2563eb',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        pointHoverRadius: 4,
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: gradient
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { display: false },
+                            grid: { display: false }
+                        },
+                        x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        function renderPropChart(data) {
+            const container = document.getElementById('propChart').parentElement;
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="color:#64748b; font-size:0.9rem;">Sin deuda pendiente</p>';
+                return;
+            }
+            const ctx = document.getElementById('propChart').getContext('2d');
+            if (propChart) propChart.destroy();
+
+            propChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(i => i.name),
+                    datasets: [{
+                        data: data.map(i => i.amount),
+                        backgroundColor: '#60a5fa',
+                        borderRadius: 20,
+                        barThickness: 12,
+                        maxBarThickness: 16
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: c => ` $${c.raw.toLocaleString()}` } }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: {
+                            grid: { display: false },
+                            ticks: { font: { size: 11 }, color: '#475569' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderCatChart(data) {
+            const container = document.getElementById('catChart').parentElement;
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="color:#64748b; font-size:0.9rem;">No hay categorías disponibles</p>';
+                return;
+            }
+            const ctx = document.getElementById('catChart').getContext('2d');
+            if (catChart) catChart.destroy();
+
+            catChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.map(i => i.name),
+                    datasets: [{
+                        data: data.map(i => i.amount),
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'],
+                        borderWidth: 0,
+                        cutout: '75%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true, boxWidth: 6, font: { size: 10 }, padding: 12 }
+                        },
+                        tooltip: { callbacks: { label: c => ` $${c.raw.toLocaleString()}` } }
+                    }
+                }
+            });
+        }
+
+        function renderSummaryList(d) {
+            const list = document.getElementById('dashboard-summary-list');
+            if (!list) return;
+
+            const hasProp = d.distribucion_propiedades?.length > 0;
+            const hasCat = d.distribucion_categorias?.length > 0;
+
+            const topProp = hasProp ? d.distribucion_propiedades[0].name : 'Sin datos';
+            const topCat = hasCat ? d.distribucion_categorias[0].name : 'Sin datos';
+
+            const totalDeuda = d.total_deuda || 0;
+            const status = totalDeuda > 1000000 ? 'ALERTA' : 'CONTROLADO';
+            const statusColor = totalDeuda > 1000000 ? '#ef4444' : '#10b981';
+
+            list.innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:1rem;">
+                    <div class="summary-item">
+                        <span class="label">Propiedad con mayor deuda</span>
+                        <span class="value">${topProp}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Rubro dominante</span>
+                        <span class="value">${topCat}</span>
+                    </div>
+                    <div style="padding:0.75rem; background:${statusColor}10; border-radius:6px; text-align:center;">
+                        <span style="color:${statusColor}; font-size:0.85rem; font-weight:700; letter-spacing:0.5px;">${status}</span>
+                    </div>
+                </div>
+            `;
+
+            if (!document.getElementById('summary-styles')) {
+                const s = document.createElement('style');
+                s.id = 'summary-styles';
+                s.innerHTML = `
+                    .summary-item { display:flex; justify-content:space-between; align-items:center; padding-bottom:0.75rem; border-bottom:1px solid #f1f5f9; }
+                    .summary-item .label { color:#64748b; font-size:0.85rem; }
+                    .summary-item .value { font-weight:600; color:#0f172a; font-size:0.9rem; }
+                `;
+                document.head.appendChild(s);
+            }
+        }
+
+        checkAuth();
+
+        // --- NEW UTILS ---
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toastContainer') || createToastContainer();
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span> ${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function createToastContainer() {
+            const div = document.createElement('div');
+            div.id = 'toastContainer';
+            document.body.appendChild(div);
+            return div;
+        }
+
+        let timeout;
+        function debounce(func, delay) {
+            return function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func(), delay);
+            }
+        }
+        const debouncedSearch = debounce(loadVencimientos, 300);
+
+        async function initFilters() {
+            try {
+                const res = await fetch(`${API_BASE}/periodos-disponibles`);
+                const periods = await res.json();
+                const select = document.getElementById('periodFilter');
+                // Keep only the first option (All)
+                select.innerHTML = '<option value="">Todos los meses</option>';
+                periods.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p;
+                    opt.innerText = p;
+                    select.appendChild(opt);
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadVencimientos() {
+            const container = document.getElementById('app');
+            const searchBox = document.getElementById('searchBox');
+            const periodBox = document.getElementById('periodFilter');
+
+            const search = searchBox ? searchBox.value : "";
+            const period = periodBox ? periodBox.value : "";
+
+            // Show Skeleton
+            container.innerHTML = Array(6).fill(0).map(() => `
+                <div class="card" style="border-left-color:#e2e8f0">
+                    <div class="skeleton" style="height: 20px; width: 60%; margin-bottom: 10px;"></div>
+                    <div class="skeleton" style="height: 15px; width: 40%; margin-bottom: 20px;"></div>
+                    <div class="skeleton" style="height: 30px; width: 30%;"></div>
+                </div>
+            `).join('');
+
+            try {
+                const url = new URL('/vencimientos', API_BASE);
+                if (period) url.searchParams.append('periodo', period);
+                if (search) url.searchParams.append('search', search);
+
+                const res = await fetch(url);
+                const items = await res.json();
+
+                // Update Totals
+                let pagado = 0, pendiente = 0;
+                items.forEach(i => {
+                    if (i.estado.toLowerCase().includes('pagado')) pagado += i.monto;
+                    else pendiente += i.monto;
+                });
+                const pagadoEl = document.getElementById('total-pagado-filtro');
+                const pendienteEl = document.getElementById('total-pendiente-filtro');
+                if (pagadoEl) pagadoEl.innerText = "$" + pagado.toLocaleString();
+                if (pendienteEl) pendienteEl.innerText = "$" + pendiente.toLocaleString();
+
+                if (items.length === 0) {
+                    container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 3rem; color:#64748b;">No se encontraron resultados.</div>`;
+                    return;
+                }
+
+                container.innerHTML = items.map(item => {
+                    const isPaid = item.estado.toLowerCase().includes('pagado');
+                    return `<div class="card ${isPaid ? 'pagado' : 'pendiente'}">
+                        <div class="card-header">
+                            <div><h3>${item.proveedor}</h3><div class="meta">${item.inmueble}</div></div>
+                            <div class="price">$${item.monto.toLocaleString()}</div>
+                        </div>
+                        <div class="meta">📅 ${item.fecha} | ${item.servicio}</div>
+                        <div class="actions">
+                            ${item.has_pdf ? `<button class="btn btn-outline" onclick="window.open('/vencimientos/${item.id}/pdf')">📄 PDF</button>` : ''}
+                            ${isPaid ? '✅' : `<button class="btn btn-primary" onclick="openPayment(${item.id}, '${item.proveedor}', ${item.monto})">💵 Pagar</button>`}
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (e) {
+                console.error(e);
+                container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:#ef4444;">Error cargando datos: ${e.message}</div>`;
+            }
+        }
+
+        async function loadGenericList(endpoint, headers, rowFn) {
+            try {
+                const res = await fetch(`${API_BASE}/${endpoint}`);
+                const items = await res.json();
+                document.getElementById('generic-thead').innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+                document.getElementById('generic-tbody').innerHTML = items.map(i => `<tr>${rowFn(i)}</tr>`).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        function openPayment(id, prov, amount) {
+            document.getElementById('payId').value = id;
+            document.getElementById('modalItemTitle').innerText = prov;
+            document.getElementById('payAmount').value = amount;
+            document.getElementById('payDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+        function closePayment() { document.getElementById('paymentModal').style.display = 'none'; }
+
+        async function confirmPayment() {
+            const id = document.getElementById('payId').value;
+            const monto = document.getElementById('payAmount').value;
+            const fecha = document.getElementById('payDate').value;
+            const medio = document.getElementById('payMethod').value;
+
+            try {
+                const res = await fetch(`${API_BASE}/vencimientos/${id}/pagar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ monto, fecha, medio_pago: medio })
+                });
+                if (!res.ok) throw new Error("Error al procesar pago");
+
+                showToast("Pago registrado con éxito!");
+                closePayment();
+                loadVencimientos();
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+
+        // On Load
+        window.addEventListener('load', () => {
+            initFilters();
+        });
+    </script>
+</body>
+
+</html>

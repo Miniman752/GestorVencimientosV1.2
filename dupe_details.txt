@@ -1,0 +1,35 @@
+Inspecting Vencimientos 29 and 33:
+[
+  {
+    "id": 33,
+    "obligacion_id": 28,
+    "periodo": "2025-12",
+    "fecha_vencimiento": "2025-12-01",
+    "monto_original": "420000.00",
+    "moneda": "ARS",
+    "monto_actualizado": "0.00",
+    "estado": "PAGADO",
+    "prioridad": 1,
+    "ruta_archivo_pdf": null,
+    "ruta_comprobante_pago": "2025\\12\\Dpto Callao 1234\\2025-12_Banco Conciliaci\u00f3n_Dpto Callao 1234_COMPROBANTE.pdf",
+    "is_deleted": 0,
+    "documento_id": null,
+    "comprobante_pago_id": null
+  },
+  {
+    "id": 29,
+    "obligacion_id": 28,
+    "periodo": "2025-12",
+    "fecha_vencimiento": "2025-12-01",
+    "monto_original": "-420000.00",
+    "moneda": "ARS",
+    "monto_actualizado": "0.00",
+    "estado": "PAGADO",
+    "prioridad": 1,
+    "ruta_archivo_pdf": null,
+    "ruta_comprobante_pago": "12\\2025\\Varios\\12-2025_Banco_Varios_COMPROBANTE_db6f.pdf",
+    "is_deleted": 1,
+    "documento_id": null,
+    "comprobante_pago_id": null
+  }
+]
