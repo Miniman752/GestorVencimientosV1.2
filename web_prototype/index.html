@@ -873,12 +873,31 @@
         }
 
         function renderTrendChart(data) {
-            const container = document.getElementById('monthlyChart').parentElement;
+            const canvas = document.getElementById('monthlyChart');
+            if (!canvas) return;
+            const container = canvas.parentElement;
+            let msg = container.querySelector('.no-data-msg');
+
             if (!data || data.length === 0) {
-                container.innerHTML = '<p style="color:#64748b; font-size:0.9rem;">Sin datos para mostrar</p>';
+                if (mainChart) mainChart.destroy();
+                canvas.style.display = 'none';
+                if (!msg) {
+                    msg = document.createElement('p');
+                    msg.className = 'no-data-msg';
+                    msg.style.cssText = 'color:#64748b; font-size:0.9rem; text-align:center; padding:1rem;';
+                    msg.innerText = 'Sin datos para mostrar';
+                    container.appendChild(msg);
+                } else {
+                    msg.style.display = 'block';
+                }
                 return;
             }
-            const ctx = document.getElementById('monthlyChart').getContext('2d');
+
+            // Has data
+            canvas.style.display = 'block';
+            if (msg) msg.style.display = 'none';
+
+            const ctx = canvas.getContext('2d');
             if (mainChart) mainChart.destroy();
 
             const gradient = ctx.createLinearGradient(0, 0, 0, 300);
@@ -918,12 +937,31 @@
         }
 
         function renderPropChart(data) {
-            const container = document.getElementById('propChart').parentElement;
+            const canvas = document.getElementById('propChart');
+            if (!canvas) return;
+            const container = canvas.parentElement;
+            let msg = container.querySelector('.no-data-msg');
+
             if (!data || data.length === 0) {
-                container.innerHTML = '<p style="color:#64748b; font-size:0.9rem;">Sin deuda pendiente</p>';
+                if (propChart) propChart.destroy();
+                canvas.style.display = 'none';
+                if (!msg) {
+                    msg = document.createElement('p');
+                    msg.className = 'no-data-msg';
+                    msg.style.cssText = 'color:#64748b; font-size:0.9rem; text-align:center; padding:1rem;';
+                    msg.innerText = 'Sin deuda pendiente';
+                    container.appendChild(msg);
+                } else {
+                    msg.style.display = 'block';
+                }
                 return;
             }
-            const ctx = document.getElementById('propChart').getContext('2d');
+
+            // Has data
+            canvas.style.display = 'block';
+            if (msg) msg.style.display = 'none';
+
+            const ctx = canvas.getContext('2d');
             if (propChart) propChart.destroy();
 
             propChart = new Chart(ctx, {
@@ -958,12 +996,31 @@
         }
 
         function renderCatChart(data) {
-            const container = document.getElementById('catChart').parentElement;
+            const canvas = document.getElementById('catChart');
+            if (!canvas) return;
+            const container = canvas.parentElement;
+            let msg = container.querySelector('.no-data-msg');
+
             if (!data || data.length === 0) {
-                container.innerHTML = '<p style="color:#64748b; font-size:0.9rem;">No hay categorías disponibles</p>';
+                if (catChart) catChart.destroy();
+                canvas.style.display = 'none';
+                if (!msg) {
+                    msg = document.createElement('p');
+                    msg.className = 'no-data-msg';
+                    msg.style.cssText = 'color:#64748b; font-size:0.9rem; text-align:center; padding:1rem;';
+                    msg.innerText = 'No hay categorías';
+                    container.appendChild(msg);
+                } else {
+                    msg.style.display = 'block';
+                }
                 return;
             }
-            const ctx = document.getElementById('catChart').getContext('2d');
+
+            // Has data
+            canvas.style.display = 'block';
+            if (msg) msg.style.display = 'none';
+
+            const ctx = canvas.getContext('2d');
             if (catChart) catChart.destroy();
 
             catChart = new Chart(ctx, {
