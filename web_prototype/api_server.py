@@ -353,6 +353,25 @@ def get_dashboard_stats():
         prox_q = text(f"SELECT COUNT(id) FROM vencimientos WHERE is_deleted = 0 AND estado != 'PAGADO' AND fecha_vencimiento <= '{next_week}' AND fecha_vencimiento >= '{today_str}'")
         proximos = session.execute(prox_q).scalar() or 0
 
+        # 3.1 Next Due Item (Specifics)
+        next_due_q = text("""
+            SELECT v.fecha_vencimiento, v.monto_original, i.alias
+            FROM vencimientos v
+            JOIN obligaciones o ON v.obligacion_id = o.id
+            JOIN inmuebles i ON o.inmueble_id = i.id
+            WHERE v.is_deleted = 0 AND v.estado != 'PAGADO'
+            ORDER BY v.fecha_vencimiento ASC
+            LIMIT 1
+        """)
+        next_due_row = session.execute(next_due_q).fetchone()
+        next_due_data = None
+        if next_due_row:
+            next_due_data = {
+                "fecha": next_due_row[0].strftime('%d/%m'),
+                "monto": float(next_due_row[1]),
+                "alias": next_due_row[2]
+            }
+
         # 4. Distribution by Property (By Amount)
         prop_query = text("""
             SELECT i.alias, SUM(v.monto_original)
@@ -399,7 +418,8 @@ def get_dashboard_stats():
             "proximos_vencimientos": proximos,
             "distribucion_propiedades": dist_prop[:8], # Top 8 only
             "stats_mensuales": stats_mensuales,
-            "distribucion_categorias": dist_cat
+            "distribucion_categorias": dist_cat,
+            "proximo_vencimiento_dato": next_due_data
         }
     except Exception as e:
         import traceback
