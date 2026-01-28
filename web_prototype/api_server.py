@@ -75,6 +75,8 @@ class DashboardStats(BaseModel):
     proximos_vencimientos: int
     distribucion_propiedades: List[dict]
     stats_mensuales: List[dict]
+    distribucion_categorias: List[dict]
+    proximo_vencimiento_dato: Optional[dict] = None
 
 class ProveedorSimple(BaseModel):
     id: int
@@ -407,10 +409,19 @@ def get_dashboard_stats():
             GROUP BY COALESCE(p.categoria, 'OTRO')
             ORDER BY SUM(v.monto_original) DESC
         """)
-        cat_stats = session.execute(cat_query).fetchall()
-        print(f"DEBUG: Found {len(cat_stats)} category stats")
-        dist_cat = [{"name": p[0], "amount": float(p[1])} for p in cat_stats]
         
+        # Robust fetch & convert
+        cat_rows = session.execute(cat_query).fetchall()
+        
+        dist_cat = []
+        for row in cat_rows:
+            try:
+                name = row[0] or "OTROS"
+                amount = float(row[1] or 0.0)
+                dist_cat.append({"name": str(name), "amount": amount})
+            except Exception:
+                continue
+
         return {
             "total_deuda": float(total_deuda),
             "total_pagado": float(total_pagado),
