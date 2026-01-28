@@ -18,3 +18,7 @@ Compartir_Internet.bat
 .idea/
 .vscode/
 .DS_Store
+
+GITHUB_DEPLOY/
+debug_*.py
+*.txt
