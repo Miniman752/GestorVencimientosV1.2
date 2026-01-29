@@ -605,7 +605,7 @@
     <!-- LOGIN SCREEN -->
     <div id="loginOverlay">
         <form class="login-card" onsubmit="handleLogin(event)">
-            <h2>GestorApp V2 ⚡</h2>
+            <h2>GestorApp V3 ⚡</h2>
             <p>Inicia sesión para proteger tus datos.</p>
             <div class="form-group">
                 <label>Usuario</label>
@@ -791,13 +791,22 @@
             const errEl = document.getElementById('loginError');
 
             try {
+                // OAuth2 expects form-urlencoded, not JSON
+                const formData = new URLSearchParams();
+                formData.append('username', username);
+                formData.append('password', password);
+
                 const res = await fetch(`${API_BASE}/login`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
                 });
 
-                if (!res.ok) throw new Error("Acceso denegado");
+                if (!res.ok) {
+                    const errText = await res.text();
+                    console.error("Login failed:", res.status, errText);
+                    throw new Error("Credenciales inválidas");
+                }
 
                 const user = await res.json();
                 localStorage.setItem('user', JSON.stringify(user));
