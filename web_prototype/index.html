@@ -822,6 +822,7 @@
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('appSidebar').style.display = 'flex';
             document.getElementById('appMain').style.display = 'flex';
+            initFilters(); // Load filters only when authenticated
             router('dashboard');
         }
 
@@ -853,23 +854,23 @@
                 logout();
                 throw new Error("No autenticado");
             }
-            
+
             const user = JSON.parse(userStr);
             const token = user.access_token;
-            
-            const headers = { 
-                ...options.headers, 
-                'Authorization': `Bearer ${token}` 
+
+            const headers = {
+                ...options.headers,
+                'Authorization': `Bearer ${token}`
             };
-            
+
             const res = await fetch(url, { ...options, headers });
-            
+
             if (res.status === 401) {
                 console.warn("Sesión expirada o inválida");
                 logout();
                 throw new Error("Sesión expirada");
             }
-            
+
             return res;
         }
 
@@ -877,7 +878,7 @@
             try {
                 const res = await authenticatedFetch(`${API_BASE}/vencimientos/${id}/pdf`);
                 if (!res.ok) throw new Error("No se pudo descargar el PDF");
-                
+
                 const blob = await res.blob();
                 const url = window.URL.createObjectURL(blob);
                 window.open(url, '_blank');
@@ -1339,8 +1340,11 @@
         }
 
         // On Load
+        // On Load
         window.addEventListener('load', () => {
-            initFilters();
+            // checkAuth triggers showApp if logged in, which triggers initFilters.
+            // If not logged in, we do nothing (stay on login screen).
+            // initFilters(); // REMOVED to prevent loop
         });
     </script>
 </body>
