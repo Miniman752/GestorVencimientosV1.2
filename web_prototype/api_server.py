@@ -1,9 +1,10 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from typing import List, Optional
 import sys
 import os
-from datetime import date
+from datetime import date, timedelta
 
 # --- Fix Path to find parent modules ---
 # We add the parent directory to sys.path so we can import 'services', 'models', etc.
@@ -15,8 +16,12 @@ from models.entities import Vencimiento, EstadoVencimiento
 from database import init_db
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
+from web_prototype.security import create_access_token, decode_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
 
 app = FastAPI(title="Gestor Vencimientos API (Mobile Prototype)")
+
+# Security Scheme
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(
@@ -49,10 +54,32 @@ async def startup_event():
         
     print("API STARTUP: Ready.")
 
+# --- Security Dependencies ---
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    payload = decode_access_token(token)
+    if payload is None:
+        raise credentials_exception
+    username: str = payload.get("sub")
+    if username is None:
+        raise credentials_exception
+    
+    # Optional: Verify user still exists in DB
+    # For now, we trust the token identity to avoid DB hit on every request if desired,
+    # but for safety let's check basic existence if critical.
+    # Here we just return the username context.
+    return username
+
 # --- Data Models (Pydantic) ---
-class LoginRequest(BaseModel):
-    username: str
-    password: str
+# ELIMINADO: LoginRequest manual (usaremos OAuth2PasswordRequestForm)
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
 
 class VencimientoSimple(BaseModel):
     id: int
@@ -86,8 +113,7 @@ class ProveedorSimple(BaseModel):
     class Config:
         orm_mode = True
 
-    class Config:
-        orm_mode = True
+# Removed duplicate Config block here
 
 class PagoSimple(BaseModel):
     id: int
@@ -123,18 +149,30 @@ def read_root():
     with open(html_path, "r", encoding="utf-8") as f:
         return f.read()
 
-@app.post("/login")
-def login(request: LoginRequest):
+@app.post("/login", response_model=Token)
+def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     # Lazy Init
     from services.auth_service import AuthService
-    user = AuthService.login(request.username, request.password)
-    # ... rest of function ...
+    
+    # AuthService.login verifies hash internally
+    user = AuthService.login(form_data.username, form_data.password)
+    
     if not user:
-        raise HTTPException(status_code=401, detail="Credenciales inválidas")
-    return {"status": "ok", "user": user.username, "role": user.rol}
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username, "role": user.rol},
+        expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @app.get("/vencimientos", response_model=List[VencimientoSimple])
-def get_vencimientos(periodo: Optional[str] = None, search: Optional[str] = None):
+def get_vencimientos(periodo: Optional[str] = None, search: Optional[str] = None, user: str = Depends(get_current_user)):
     """Get vencimientos, optionally filtered by period and/or search term"""
     print(f"DEBUG: Fetching vencimientos (Period: {periodo}, Search: {search})...")
     
@@ -224,7 +262,7 @@ def get_vencimientos(periodo: Optional[str] = None, search: Optional[str] = None
         session.close()
 
 @app.get("/periodos-disponibles")
-def get_available_periods():
+def get_available_periods(user: str = Depends(get_current_user)):
     """Returns a unique list of periods stored in DB for filtering"""
     from database import SessionLocal
     session = SessionLocal()
@@ -238,7 +276,7 @@ def get_available_periods():
 from fastapi.responses import Response, FileResponse
 
 @app.get("/vencimientos/{id}/pdf")
-def get_vencimiento_pdf(id: int):
+def get_vencimiento_pdf(id: int, user: str = Depends(get_current_user)):
     print(f"DEBUG: Fetching PDF for Vencimiento {id}")
     from database import SessionLocal
     from models.entities import Documento
@@ -285,7 +323,7 @@ class PaymentRequest(BaseModel):
     nota: Optional[str] = None
 
 @app.post("/vencimientos/{id}/pagar")
-def pagar_vencimiento(id: int, payment: PaymentRequest):
+def pagar_vencimiento(id: int, payment: PaymentRequest, user: str = Depends(get_current_user)):
     print(f"DEBUG: Processing Payment for {id}: {payment}")
     from database import SessionLocal
     from models.entities import Pago, EstadoVencimiento
@@ -327,7 +365,7 @@ def pagar_vencimiento(id: int, payment: PaymentRequest):
 # --- Module Endpoints ---
 
 @app.get("/dashboard-stats", response_model=DashboardStats)
-def get_dashboard_stats():
+def get_dashboard_stats(user: str = Depends(get_current_user)):
     print("DEBUG: Fetching Dashboard Stats")
     from database import SessionLocal
     from models.entities import Vencimiento, EstadoVencimiento, Pago
@@ -443,7 +481,7 @@ def get_dashboard_stats():
         session.close()
 
 @app.get("/proveedores", response_model=List[ProveedorSimple])
-def get_proveedores():
+def get_proveedores(user: str = Depends(get_current_user)):
     print("DEBUG: Fetching Proveedores")
     from database import SessionLocal
     from models.entities import ProveedorServicio
@@ -468,7 +506,7 @@ def get_proveedores():
 
 
 @app.get("/inmuebles", response_model=List[InmuebleSimple])
-def get_inmuebles():
+def get_inmuebles(user: str = Depends(get_current_user)):
     from database import SessionLocal
     from models.entities import Inmueble
     
@@ -480,7 +518,7 @@ def get_inmuebles():
         session.close()
 
 @app.get("/pagos", response_model=List[PagoSimple])
-def get_pagos():
+def get_pagos(user: str = Depends(get_current_user)):
     from database import SessionLocal
     from models.entities import Pago, Vencimiento, Obligacion, ProveedorServicio
     from sqlalchemy.orm import joinedload

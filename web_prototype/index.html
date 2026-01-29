@@ -846,12 +846,52 @@
             document.getElementById(sectionId).style.display = 'block';
         }
 
+        // --- AUTH & FETCH ---
+        async function authenticatedFetch(url, options = {}) {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) {
+                logout();
+                throw new Error("No autenticado");
+            }
+            
+            const user = JSON.parse(userStr);
+            const token = user.access_token;
+            
+            const headers = { 
+                ...options.headers, 
+                'Authorization': `Bearer ${token}` 
+            };
+            
+            const res = await fetch(url, { ...options, headers });
+            
+            if (res.status === 401) {
+                console.warn("Sesión expirada o inválida");
+                logout();
+                throw new Error("Sesión expirada");
+            }
+            
+            return res;
+        }
+
+        async function openPdf(id) {
+            try {
+                const res = await authenticatedFetch(`${API_BASE}/vencimientos/${id}/pdf`);
+                if (!res.ok) throw new Error("No se pudo descargar el PDF");
+                
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                window.open(url, '_blank');
+            } catch (e) {
+                showToast("Error abriendo PDF: " + e.message, "error");
+            }
+        }
+
         // --- ACTIONS ---
         let mainChart, propChart, catChart;
 
         async function loadDashboard() {
             try {
-                const res = await fetch(`${API_BASE}/dashboard-stats`);
+                const res = await authenticatedFetch(`${API_BASE}/dashboard-stats`);
                 if (!res.ok) {
                     const err = await res.text();
                     throw new Error(`Server Error ${res.status}: ${err}`);
@@ -1183,7 +1223,7 @@
 
         async function initFilters() {
             try {
-                const res = await fetch(`${API_BASE}/periodos-disponibles`);
+                const res = await authenticatedFetch(`${API_BASE}/periodos-disponibles`);
                 const periods = await res.json();
                 const select = document.getElementById('periodFilter');
                 // Keep only the first option (All)
@@ -1219,7 +1259,7 @@
                 if (period) url.searchParams.append('periodo', period);
                 if (search) url.searchParams.append('search', search);
 
-                const res = await fetch(url);
+                const res = await authenticatedFetch(url);
                 const items = await res.json();
 
                 // Update Totals
@@ -1247,7 +1287,7 @@
                         </div>
                         <div class="meta">📅 ${item.fecha} | ${item.servicio}</div>
                         <div class="actions">
-                            ${item.has_pdf ? `<button class="btn btn-outline" onclick="window.open('/vencimientos/${item.id}/pdf')">📄 PDF</button>` : ''}
+                            ${item.has_pdf ? `<button class="btn btn-outline" onclick="openPdf(${item.id})">📄 PDF</button>` : ''}
                             ${isPaid ? '✅' : `<button class="btn btn-primary" onclick="openPayment(${item.id}, '${item.proveedor}', ${item.monto})">💵 Pagar</button>`}
                         </div>
                     </div>`;
@@ -1260,7 +1300,7 @@
 
         async function loadGenericList(endpoint, headers, rowFn) {
             try {
-                const res = await fetch(`${API_BASE}/${endpoint}`);
+                const res = await authenticatedFetch(`${API_BASE}/${endpoint}`);
                 const items = await res.json();
                 document.getElementById('generic-thead').innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
                 document.getElementById('generic-tbody').innerHTML = items.map(i => `<tr>${rowFn(i)}</tr>`).join('');
@@ -1283,7 +1323,7 @@
             const medio = document.getElementById('payMethod').value;
 
             try {
-                const res = await fetch(`${API_BASE}/vencimientos/${id}/pagar`, {
+                const res = await authenticatedFetch(`${API_BASE}/vencimientos/${id}/pagar`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ monto, fecha, medio_pago: medio })
