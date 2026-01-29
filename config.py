@@ -47,9 +47,9 @@ def load_last_db_path():
                     return path
     
     # Default fallback
-    # Default fallback - FORCE POSTGRES for this user environment
-    print(f"DEBUG: Config fallback. Forcing Postgres.")
-    return "postgresql://neondb_owner:npg_vhmWRL8ESXI3@ep-green-night-acbu7krn-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require"
+    # Default fallback - SAFE
+    # Do NOT hardcode production credentials here.
+    return "vencimientos.db" # Local SQLite by default if nothing else found
     # return str(BASE_DIR / "vencimientos.db")
 
 def save_last_db_path(path):
